@@ -15,7 +15,12 @@ function App() {
   const [orderBy, setOrderBy] = useState("");
   const [categories, setCategories] = useState("");
   const [display, setDisplay] = useState("none");
+  const [visibility, setVisibility] = useState("visible");
   const style = { display: `${display}` };
+  const styleVisible = {
+    display: `${display}`,
+    visibility: `${visibility}`,
+  };
   const orderByValue = 'relevance';
   function handleChange(event) {
     setLoading(false);
@@ -47,24 +52,27 @@ function App() {
   function handleSubmit(event) {
     event.preventDefault();
     setLoading(true);
-    setStartIndex(0);
-    console.log(arrayBook);
     fetch(`https://www.googleapis.com/books/v1/volumes?q=${book}+subject:${categories === 'all' ? '' : categories}&orderBy=${orderBy === '' ? orderByValue : orderBy}&key=AIzaSyADpr5R3V_nSai8eTz_RzNpBWm2ikEzSk0&maxResults=${maxResults}&startIndex=${startIndex}`)
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        setArrayBook(data.items);
-        setStartIndex(startIndex + 30);
+        setArrayBook([...arrayBook, ...data.items]);
         setTotalItems(data.totalItems);
+        setStartIndex(startIndex + 30);
+        if (data.totalItems < startIndex + 30) {
+          setVisibility('hidden');
+        }
         console.log(startIndex);
         setLoading(false);
         setDisplay('');
       });
   }
-  function handleClick(event) {
-    event.preventDefault();
-    handleSubmit(event);
+  
+  function handleClick() {
+    setStartIndex(0);
+    setArrayBook([]);
+    setDisplay('none');
   }
 
   return (
@@ -74,7 +82,7 @@ function App() {
         <form onSubmit={handleSubmit}>
           <div className="searchContainer">
             <input onChange={handleChange} type="search" placeholder="Search for books" id="book" required />
-            <button><img src={Logo} alt="Search" className="searchLogo" /></button>
+            <button onClick={() => { handleClick()}}><img src={Logo} alt="Search" className="searchLogo" /></button>
           </div>
           <div className="selectContainer">
             <div>
@@ -105,7 +113,7 @@ function App() {
       <div className="cardContainer">
         <BookCard books={arrayBook} ></BookCard>
       </div>
-      {loading ? <Loading /> : <button className='loadButton' onClick={(event) => handleClick(event)} style={style}>load more</button>}
+      {loading ? <Loading /> : <button className='loadButton' onClick={(event) => handleSubmit(event)} style={styleVisible}>load more</button>}
     </>
   );
 }
