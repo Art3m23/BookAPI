@@ -20,8 +20,8 @@ export default function BookCard({books}) {
         <div key={index}>
           <div className="card"  onClick={()=>{setDisplayModal(''); setBook(item);notevisibleScroll()}}>
             <img src={item.volumeInfo.imageLinks ? item.volumeInfo.imageLinks.smallThumbnail : bookImg} alt="book" />
-            <h3>{item.volumeInfo.categories ? item.volumeInfo.categories[0] : ''}</h3>
-            <h3>{item.volumeInfo.title ? item.volumeInfo.title : ''}</h3>
+            <h3 className="categoriesColor">{item.volumeInfo.categories ? item.volumeInfo.categories[0] : ''}</h3>
+            <h3 className="title">{item.volumeInfo.title ? item.volumeInfo.title : ''}</h3>
             <p>{item.volumeInfo.authors ? item.volumeInfo.authors.join(' / ') : ''}</p>
           </div>
           <Modal style={styleModal} bookItem={book} onClose={()=>{setDisplayModal('none');visibleScroll()}}></Modal>
